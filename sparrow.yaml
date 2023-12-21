@@ -21,14 +21,13 @@ tasks:
     language: Bash
     code: |
       set -e
-      set -x
       if test $os = "alpine"; then
         sudo apk add --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/ raylib-dev
       elif test $os = "debian"; then
         echo "debian install is not yet supported"
       elif test $os = "ubuntu"; then
         sudo apt-get update -y 1>/dev/null
-        sudo apt install build-essential cmake 
+        sudo apt install build-essential cmake -y 1>/dev/null
         sudo apt install libasound2-dev libx11-dev libxrandr-dev \
         libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxcursor-dev \
         libxinerama-dev -y 1>/dev/null
