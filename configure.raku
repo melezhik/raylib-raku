@@ -13,9 +13,24 @@ sub check-if-installed {
 sub get-header-from-pkg-config($library_name) {
     my $proc = shell("pkg-config --cflags $library_name", :out);
     my $res = $proc.out.slurp: :close;
-    my $raylib-h-file = $res.trim.substr(2);
-    $raylib-h-file ~= "/$library_name.h";
-    return $raylib-h-file;
+    $res = $res.trim;
+    if !$res {
+        say "Searching for raylib.h in usr/include";
+        return use-find-raylib-header("/usr/include");
+    }
+    else {
+        my $raylib-h-file = $res.substr(2);
+        $raylib-h-file ~= "/$library_name.h";
+        return $raylib-h-file;
+    }
+}
+
+sub use-find-raylib-header($path) {
+    my $proc = shell("find $path -name 'raylib.h'", :out);
+    my $res = $proc.out.slurp: :close;
+    $res = $res.trim;
+    die "----- Failed to locate raylib.h! abort installation. -----" if $res.chars eq 0;
+    return $res;
 }
 
 sub configure{
@@ -25,17 +40,17 @@ sub configure{
         die "Windows is unsupported for now";
     }
     elsif $*DISTRO.name ~~ /macos/ {
-        say "Is using MACOS";
+        say "OS is MACOS";
         check-if-installed;
         $raylib-h-file = get-header-from-pkg-config($library_name);
     }
     else {
-        say "Is using linux";
+        say "OS is Linux";
         check-if-installed;
         $raylib-h-file = get-header-from-pkg-config($library_name);
 
     }
-    say $raylib-h-file;
+    say "Header file found in: ", $raylib-h-file;
     my $srcdir = $*CWD;
     my $output-dir="$srcdir/resources";
     mkdir($output-dir);
