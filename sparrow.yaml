@@ -27,15 +27,13 @@ tasks:
         echo "debian install is not yet supported"
       elif test $os = "ubuntu"; then
         sudo apt-get update -y 1>/dev/null
-        sudo apt install build-essential cmake -y 1>/dev/null
+        sudo apt install build-essential -y 1>/dev/null
         sudo apt install libasound2-dev libx11-dev libxrandr-dev \
         libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxcursor-dev \
         libxinerama-dev -y 1>/dev/null
         mkdir -p .dist && cd .dist
         git clone https://github.com/raysan5/raylib.git
-        cd raylib
-        mkdir build && cd build
-        cmake -DBUILD_SHARED_LIBS=ON ..
-        make
-        sudo make install        
+        cd raylib/src
+        make PLATFORM=PLATFORM_DESKTOP RAYLIB_LIBTYPE=SHARED # To make the dynamic shared version.
+        sudo make install
       fi      
