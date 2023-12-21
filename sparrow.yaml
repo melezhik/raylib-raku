@@ -1,7 +1,7 @@
 image:
   - melezhik/sparrow:alpine_arm
   #- melezhik/sparrow:debian_arm
-  #- melezhik/sparrow:ubuntu_arm
+  - melezhik/sparrow:ubuntu_arm
 
 tasks:
   -
@@ -24,7 +24,18 @@ tasks:
       if test $os = "alpine"; then
         sudo apk add --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/ raylib-dev
       elif test $os = "debian"; then
-        sudo apt-get install -y raylib-dev 1>/dev/null
+        echo "debian install is not yet supported"
       elif test $os = "ubuntu"; then
-        sudo apt-get install -y raylib-dev 1>/dev/null
+        sudo apt-get update 1>/dev/null
+        sudo apt install build-essential cmake 1>/dev/null
+        sudo apt install libasound2-dev libx11-dev libxrandr-dev \
+        libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxcursor-dev \
+        libxinerama-dev 1>/dev/null
+        mkdir -p .dist && cd .dist
+        git clone https://github.com/raysan5/raylib.git
+        cd raylib
+        mkdir build && cd build
+        cmake -DBUILD_SHARED_LIBS=ON ..
+        make
+        sudo make install        
       fi      
